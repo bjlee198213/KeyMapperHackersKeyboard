@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="org.pocketworkstation.pckeyboard">
+        package="io.github.sds100.keymapper.inputmethod.hackers">
 
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
@@ -10,13 +10,13 @@
 
     <application android:label="@string/english_ime_name"
             android:allowBackup="true"
-            android:backupAgent="LatinIMEBackupAgent"
+            android:backupAgent="io.github.sds100.keymapper.inputmethod.hackers.LatinIMEBackupAgent"
             android:restoreAnyVersion="true"
             android:hardwareAccelerated="false"
             android:killAfterRestore="false"
             android:icon="@drawable/icon">
 
-        <service android:name="LatinIME"
+        <service android:name="io.github.sds100.keymapper.inputmethod.hackers.LatinIME"
                 android:label="@string/english_ime_name"
                 android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
@@ -25,14 +25,14 @@
             <meta-data android:name="android.view.im" android:resource="@xml/method" />
         </service>
 
-        <activity android:name="Main" android:label="Hacker's Keyboard">
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.Main" android:label="Hacker's Keyboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name="LatinIMESettings" android:label="@string/english_ime_settings">
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.LatinIMESettings" android:label="@string/english_ime_settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="org.pocketworkstation.pckeyboard.SETTINGS"/>
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="InputLanguageSelection"
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.InputLanguageSelection"
                 android:label="@string/language_selection_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="PrefScreenActions"
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.PrefScreenActions"
                 android:label="@string/pref_screen_actions_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
             
-        <activity android:name="PrefScreenView"
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.PrefScreenView"
                 android:label="@string/pref_screen_actions_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -67,7 +67,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="PrefScreenFeedback"
+        <activity android:name="io.github.sds100.keymapper.inputmethod.hackers.PrefScreenFeedback"
                 android:label="@string/pref_screen_feedback_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
