@@ -353,6 +353,92 @@ public class LatinIME extends InputMethodService implements
         }
     };
 
+    //DON'T CHANGE THESE!!!
+    private static final String KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN_UP";
+    private static final String KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_DOWN";
+    private static final String KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_UP";
+    private static final String KEY_MAPPER_INPUT_METHOD_ACTION_TEXT = "io.github.sds100.keymapper.inputmethod.ACTION_INPUT_TEXT";
+
+    private static final String KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT = "io.github.sds100.keymapper.inputmethod.EXTRA_TEXT";
+    private static final String KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT = "io.github.sds100.keymapper.inputmethod.EXTRA_KEY_EVENT";
+
+    final static class KeyMapperBroadcastReceiver extends BroadcastReceiver {
+        private final LatinIME mIms;
+
+        public KeyMapperBroadcastReceiver(LatinIME ims) {
+            mIms = ims;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            assert action != null;
+
+            switch (action) {
+                case LatinIME.KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP: {
+                    KeyEvent downEvent = intent.getParcelableExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT);
+
+                    InputConnection ic = mIms.getCurrentInputConnection();
+
+                    if (ic != null) {
+                        ic.sendKeyEvent(downEvent);
+                    }
+
+                    KeyEvent upEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_UP);
+
+                    if (ic != null) {
+                        ic.sendKeyEvent(upEvent);
+                    }
+
+                    break;
+                }
+
+                case LatinIME.KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN: {
+                    KeyEvent downEvent = intent.getParcelableExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT);
+
+                    downEvent = KeyEvent.changeAction(downEvent, KeyEvent.ACTION_DOWN);
+
+                    InputConnection ic = mIms.getCurrentInputConnection();
+
+                    if (ic != null) {
+                        ic.sendKeyEvent(downEvent);
+                    }
+
+                    break;
+                }
+
+                case LatinIME.KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP: {
+                    KeyEvent upEvent = intent.getParcelableExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_KEY_EVENT);
+
+                    upEvent = KeyEvent.changeAction(upEvent, KeyEvent.ACTION_UP);
+
+                    InputConnection ic = mIms.getCurrentInputConnection();
+
+                    if (ic != null) {
+                        ic.sendKeyEvent(upEvent);
+                    }
+
+                    break;
+                }
+
+                case LatinIME.KEY_MAPPER_INPUT_METHOD_ACTION_TEXT: {
+                    String text = intent.getStringExtra(KEY_MAPPER_INPUT_METHOD_EXTRA_TEXT);
+
+                    if (text == null) return;
+
+                    if (mIms.getCurrentInputConnection() == null) return;
+
+                    mIms.getCurrentInputConnection().commitText(text, 1);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    final KeyMapperBroadcastReceiver mKeyMapperBroadcastReceiver = new KeyMapperBroadcastReceiver(this);
+
     @Override
     public void onCreate() {
         Log.i("PCKeyboard", "onCreate(), os.version=" + System.getProperty("os.version"));
@@ -434,6 +520,14 @@ public class LatinIME extends InputMethodService implements
         registerReceiver(mReceiver, filter);
         prefs.registerOnSharedPreferenceChangeListener(this);
         setNotification(mKeyboardNotification);
+
+        final IntentFilter keyMapperIntentFilter = new IntentFilter();
+        keyMapperIntentFilter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN_UP);
+        keyMapperIntentFilter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_DOWN);
+        keyMapperIntentFilter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_INPUT_UP);
+        keyMapperIntentFilter.addAction(KEY_MAPPER_INPUT_METHOD_ACTION_TEXT);
+        
+        registerReceiver(mKeyMapperBroadcastReceiver, keyMapperIntentFilter);
     }
 
     private int getKeyboardModeNum(int origMode, int override) {
@@ -657,6 +751,7 @@ public class LatinIME extends InputMethodService implements
         	unregisterReceiver(mNotificationReceiver);
             mNotificationReceiver = null;
         }
+        unregisterReceiver(mKeyMapperBroadcastReceiver);
         super.onDestroy();
     }
 
